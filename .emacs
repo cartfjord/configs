@@ -7,12 +7,63 @@
 (setq inhibit-startup-screen t)
 
 
+
+(with-eval-after-load 'verilog-mode
+  (defvar modi/verilog-eda-vendor "cadence" ; "xyz"
+    "EDA vendor tools to use for verilog/SV compilation, simulation, etc.")
+
+  (defvar modi/verilog-cadence-linter '("irun" "-hal")
+    "Verilog/SV linting command using Cadence.")
+  (defvar modi/verilog-cadence-compiler '("irun" "-compile")
+    "Verilog/SV compilation command using Cadence.")
+  (defvar modi/verilog-cadence-simulator '("irun" "-access" "rwc")
+    "Verilog/SV simulation command using Cadence.")
+
+  (defvar modi/verilog-xyz-linter '("these" "need" "to" "be" "defined")
+    "Verilog/SV linting command using Xyz.")
+  (defvar modi/verilog-xyz-compiler '("these" "need" "to" "be" "defined")
+    "Verilog/SV compilation command using Xyz.")
+  (defvar modi/verilog-xyz-simulator '("these" "need" "to" "be" "defined")
+    "Verilog/SV simulation command using Xyz.")
+
+  ;; (setq verilog-tool 'verilog-linter)
+  (setq verilog-tool 'verilog-compiler)
+  ;; (setq verilog-tool 'verilog-simulator)
+
+  (defun modi/verilog-tool-setup ()
+    "Set up for running verilog/SV compilation, simulation, etc.
+This function needs to be run in `verilog-mode-hook'."
+    (let* ((vendor-linter (symbol-value (intern (concat "modi/verilog-"
+                                                        modi/verilog-eda-vendor
+                                                        "-linter"))))
+           (cmd-linter (mapconcat 'identity vendor-linter " "))
+           (vendor-compiler (symbol-value (intern (concat "modi/verilog-"
+                                                          modi/verilog-eda-vendor
+                                                          "-compiler"))))
+           (cmd-compiler (mapconcat 'identity vendor-compiler " "))
+           (vendor-simulator (symbol-value (intern (concat "modi/verilog-"
+                                                           modi/verilog-eda-vendor
+                                                           "-simulator"))))
+           (cmd-simulator (mapconcat 'identity vendor-simulator " ")))
+      (when (executable-find (car vendor-linter))
+        (setq verilog-linter cmd-linter))
+      (when (executable-find (car vendor-compiler))
+        (setq verilog-compiler cmd-compiler))
+      (when (executable-find (car vendor-simulator))
+        (setq verilog-simulator cmd-simulator)))
+    (verilog-set-compile-command))
+  (add-hook 'verilog-mode-hook #'modi/verilog-tool-setup))
+
+
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(initial-frame-alist (quote ((fullscreen . maximized))))
+ '(vhdl-clock-edge-condition (quote function))
  '(vhdl-compiler "ModelSim")
  '(vhdl-compiler-alist
    (quote
@@ -99,7 +150,25 @@
      ("Xilinx XST" "xflow" "" "make" "-f \\1" nil "mkdir \\1" "./" "work/" "Makefile" "xilinx"
       ("^ERROR:HDLParsers:[0-9]+ - \"\\([^ \\t\\n]+\\)\" Line \\([0-9]+\\)." 1 2 nil)
       ("" 0)
-      nil)))))
+      nil))))
+ '(vhdl-testbench-architecture-name (quote (".*" . "testbench")))
+ '(vhdl-testbench-declarations "  -- clock
+  signal testbench_clk : std_logic := '1';
+")
+ '(vhdl-testbench-statements
+   "  -- clock generation
+  testbench_clk <= not testbench_clk after 10 ns;
+
+  -- waveform generation
+  WaveGen_Proc: process
+  begin
+    -- insert signal assignments here
+
+    wait until testbench_clk = '1';
+  end process WaveGen_Proc;
+"))
+
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
