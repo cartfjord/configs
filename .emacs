@@ -3,7 +3,7 @@
 (cua-mode t)
 (setq shell-file-name "bash")
 (setq shell-command-switch "-ic")
-
+(setq compilation-scroll-output t)
 (setq inhibit-startup-screen t)
 
 
