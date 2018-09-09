@@ -116,13 +116,14 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export QSYS_ROOTDIR="/home/cartfjord/intelFPGA_lite/17.1/quartus/sopc_builder/bin"
+quartus_ver=18.0
+export QSYS_ROOTDIR="/home/cartfjord/intelFPGA_lite/$quartus_ver/quartus/sopc_builder/bin"
 
 
 # Custom compile commands for VHDL and SystemVerilog for use with Modelsim.
 
-export PATH=$PATH:/home/cartfjord/intelFPGA_lite/17.1/quartus/bin
-export PATH=$PATH:/home/cartfjord/intelFPGA_lite/17.1/modelsim_ase/bin
+export PATH=$PATH:/home/cartfjord/intelFPGA_lite/$quartus_ver/quartus/bin
+export PATH=$PATH:/home/cartfjord/intelFPGA_lite/$quartus_ver/modelsim_ase/bin
 export UVM_HOME=/opt/uvm-1.2/src
 export UVVM_HOME=/opt/UVVM_Utility_Library
 vlog(){	
